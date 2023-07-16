@@ -12,14 +12,18 @@
         <action
             android:id="@+id/action_mainFragment_to_encryptFragment"
             app:destination="@id/encryptFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_decryptFragment"
+            app:destination="@id/decryptFragment" />
     </fragment>
     <fragment
         android:id="@+id/encryptFragment"
         android:name="com.cheesyguy.FileEncryptApp.HomeFragmentPack.EncryptFragment"
         android:label="fragment_encrypt"
-        tools:layout="@layout/fragment_encrypt" >
-        <action
-            android:id="@+id/action_encryptFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_encrypt" />
+    <fragment
+        android:id="@+id/decryptFragment"
+        android:name="com.cheesyguy.FileEncryptApp.HomeFragmentPack.DecryptFragment"
+        android:label="fragment_decrypt"
+        tools:layout="@layout/fragment_decrypt" />
 </navigation>

@@ -29,8 +29,7 @@ import com.molihuan.pathselector.listener.FileItemListener;
 import com.molihuan.pathselector.utils.MConstants;
 import com.molihuan.pathselector.utils.Mtools;
 
-public class EncryptFragment extends Fragment {
-
+public class DecryptFragment extends Fragment {
 
     PathSelectFragment selectFragment;
     Button filePickButton;
@@ -40,7 +39,7 @@ public class EncryptFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_encrypt, container, false);
+        View root = inflater.inflate(R.layout.fragment_decrypt, container, false);
 
         setSharedElementEnterTransition(new TransitionSet()
                 .addTransition(new ChangeBounds())
@@ -51,13 +50,13 @@ public class EncryptFragment extends Fragment {
 
         setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_transition));
 
+
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                NavHostFragment.findNavController(EncryptFragment.this).popBackStack();
+                NavHostFragment.findNavController(DecryptFragment.this).popBackStack();
             }
         };
-
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
 
@@ -75,9 +74,11 @@ public class EncryptFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                selectFragment = PathSelector.build(EncryptFragment.this, MConstants.BUILD_FRAGMENT)
+                selectFragment = PathSelector.build(DecryptFragment.this, MConstants.BUILD_FRAGMENT)
                         .setMaxCount(1)
                         .setFrameLayoutId(R.id.file_pick_frame)
+                        .setShowFileTypes("aes")
+                        .setSelectFileTypes("aes")
                         .setFileItemListener(
                                 new FileItemListener() {
                                     @Override
@@ -95,7 +96,7 @@ public class EncryptFragment extends Fragment {
                                         FileInfo[1].setText(file.getFileExtension());
                                         FileInfo[2].setText(String.format("%.2f",(double)file.getSize() / 1000000.00) + "MB");
 
-                                        
+
                                         return false;
                                     }
                                 }
@@ -106,51 +107,29 @@ public class EncryptFragment extends Fragment {
         });
 
 
-        Button EncryptButton = root.findViewById(R.id.encryptButton);
+        Button DecryptButton = root.findViewById(R.id.decryptButton);
 
         TextView passwordText = (TextView) root.findViewById(R.id.password);
-        TextView passwordTextAgain = (TextView) root.findViewById(R.id.passwordAgain);
 
-        String[] password = new String[2];
+        String[] password = new String[1];
 
-        Encryption enc = new Encryption();
         Decryption dec = new Decryption();
 
-        EncryptButton.setOnClickListener(new View.OnClickListener() {
+        DecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 password[0] = passwordText.getText().toString();
-                password[1] = passwordTextAgain.getText().toString();
 
-                if(!password[0].equals(password[1])) {
+                String path = dec.decrypt(filePath, password[0]);
 
-                    passwordTextAgain.setText("");
-
-                    Toast.makeText(getActivity(), "Passwords don't match. Please try again", Toast.LENGTH_SHORT).show();
+                if(!path.equals("false")) {
+                    Toast.makeText(getActivity(), "Decrypt Successfull", Toast.LENGTH_SHORT).show();
                 }
-                else {
-                    String path = enc.encrypt(filePath, password[0]);
-
-                    if(!path.equals("false")) {
-                        String ext = "";
-
-                        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            try {
-                                ext = Files.getAttribute(Paths.get(path), "user:extension").toString();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        } */
-
-                        Toast.makeText(getActivity(), "Encrypt Successfull", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Encryption Error", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), "Decryption Error", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-
+            });
 
         return root;
     }
@@ -158,6 +137,4 @@ public class EncryptFragment extends Fragment {
     private void setFilePath(String path) {
         this.filePath = path;
     }
-
-
 }
